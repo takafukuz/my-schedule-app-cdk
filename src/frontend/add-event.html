@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>My Schedule App - 予定追加</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <h1>My Schedule App</h1>
+  <div id="nameplate" style="text-align: center;"></div>
+  <div class="top-buttons">
+    <button onclick="window.location.href='get-calendar.html';">戻る</button>
+  </div>
+
+  <p style="text-align:center; color:#2e7d32; font-weight:500;">新しい予定を入力してください</p>
+
+  <form id="myForm" class="add-event-form">
+    <label for="date">日付</label>
+    <input type="date" id="date" name="date">
+
+    <label for="event_name">予定名</label>
+    <input type="text" id="event_name" name="event_name">
+
+    <label for="event_detail">予定詳細</label>
+    <textarea id="event_detail" name="event_detail" rows="5"></textarea>
+
+    <div style="text-align:center; margin-top:15px;">
+      <button type="submit">送信</button>
+    </div>
+  </form>
+
+  <div id="resultArea"></div>
+
+  <!-- ログインしていなければ、index.htmlにリダイレクト -->
+  <script src="js/auth/is-logged-in.js"></script>
+  <script src="js/config/cognito-config.js"></script>
+  <script type="module" src="js/config/api-gateway-config.js"></script>
+  <script src="js/auth/refresh-cognito-token.js"></script>
+  <script type="module" src="js/calendar/add-event.js"></script>
+ 
+</body>
+</html>

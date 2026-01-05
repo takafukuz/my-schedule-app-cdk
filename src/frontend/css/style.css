@@ -1,0 +1,485 @@
+/* Global Styles */
+body {
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background: #f5f7f5;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  font-weight: 600;
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+/* Container Styles */
+.login-container {
+  max-width: 360px;
+  margin: 40px auto;
+}
+
+.password-container {
+  max-width: 360px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Form Styles */
+form {
+  max-width: 400px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.password-container form {
+  max-width: none;
+  background: none;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#myForm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 20px auto;
+  flex-wrap: wrap;
+  max-width: none;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: #2e7d32;
+}
+
+#myForm label {
+  display: inline;
+  margin-bottom: 0;
+}
+
+/* Password container form inputs */
+.password-container form label {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.password-container form input[type="password"] {
+  width: 100%;
+  display: block;
+  margin-top: 4px;
+}
+
+/* Input Styles */
+input[type="text"],
+input[type="password"],
+input[type="date"],
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+input[type="date"] {
+  margin-top: 5px;
+  width: auto;
+}
+
+#myForm input[type="date"] {
+  width: auto;
+  margin-top: 0;
+  padding: 6px;
+}
+
+input[type="password"] {
+  margin-top: 4px;
+}
+
+textarea {
+  margin-top: 5px;
+  resize: vertical;
+}
+
+/* Button Styles */
+button {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 0 8px;
+  transition: background 0.3s;
+  width: 150px;
+  display: inline-flex;
+  justify-content: center;
+}
+
+button:hover {
+  background: #388e3c;
+}
+
+.password-container form button {
+  width: 100%;
+  margin: 15px 0 0 0;
+  display: block;
+  padding: 10px 0;
+}
+
+.password-container form .btn-cancel {
+  background: #9e9e9e;
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 10px 0 0 0;
+  display: block;
+}
+
+.password-container form .btn-cancel:hover {
+  background: #757575;
+}
+
+/* Arrange password form action buttons side-by-side */
+.password-container form .form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.password-container form .form-actions button {
+  width: auto;
+  flex: 1;
+  margin: 0;
+}
+
+/* Add-event specific form: constrain width and restore vertical layout */
+.add-event-form {
+  display: block;
+  max-width: 400px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.add-event-form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 500;
+  color: #2e7d32;
+}
+
+.add-event-form input[type="date"],
+.add-event-form input[type="text"],
+.add-event-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.top-buttons button {
+  font-size: 14px;
+  width: 150px;
+}
+
+#myForm button {
+  width: auto;
+  margin: 0;
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+/* Ensure add-event form overrides the generic #myForm flex rules */
+#myForm.add-event-form {
+  display: block;
+  max-width: 400px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#myForm.add-event-form label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #2e7d32;
+}
+
+#myForm.add-event-form input[type="date"],
+#myForm.add-event-form input[type="text"],
+#myForm.add-event-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+#myForm.add-event-form .form-actions {
+  display: flex;
+  justify-content: center;
+}
+
+#myForm.add-event-form .form-actions button {
+  margin: 0 8px;
+}
+
+/* Styles specific to change-password form */
+.password-change-form {
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: none;
+  padding: 0;
+}
+
+.password-change-form label {
+  margin-top: 10px;
+}
+
+.password-change-form input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.password-change-form .form-actions button {
+  white-space: nowrap; /* prevent text wrap inside button */
+  padding: 10px 20px;
+}
+
+.password-change-form .form-actions {
+  justify-content: space-between;
+}
+
+/* Stronger overrides for the change-password page: match the form by id+class to beat #myForm rules */
+#myForm.password-change-form {
+  display: block;
+  max-width: 480px;
+  margin: 0 auto;
+  background: none;
+  padding: 20px 10px;
+}
+
+#myForm.password-change-form label {
+  display: block;
+  margin-top: 14px;
+}
+
+#myForm.password-change-form input[type="password"] {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+#myForm.password-change-form .form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+#myForm.password-change-form .form-actions button {
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* Login form specific fixes: align inputs and button */
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 320px;
+  margin: 0 auto;
+  background: none;
+  padding: 0 10px;
+}
+
+#loginForm label {
+  display: block;
+  margin: 0;
+  text-align: center;
+}
+
+#loginForm input[type="text"],
+#loginForm input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#loginForm button[type="submit"] {
+  width: 100%;
+  max-width: 260px;
+  align-self: center;
+  padding: 10px 20px;
+  white-space: nowrap;
+}
+
+/* Remove card appearance for login form and make inputs/button identical size */
+.login-container form {
+  background: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+#loginForm input[type="text"],
+#loginForm input[type="password"],
+#loginForm button[type="submit"] {
+  width: 100%;
+  max-width: 320px;
+  height: 44px;
+  box-sizing: border-box;
+}
+
+#loginForm button[type="submit"] {
+  max-width: none;
+}
+
+#loginForm input[type="text"],
+#loginForm input[type="password"] {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
+#loginForm button[type="submit"] {
+  border-radius: 4px;
+  border: none;
+}
+
+.login-container button,
+.password-container button {
+  width: 100%;
+  margin-top: 15px;
+  font-size: 15px;
+}
+
+/* Header Buttons */
+.header-buttons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.header-buttons button {
+  background: #81c784;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.3s;
+  width: auto;
+  min-width: 80px;
+  margin: 0;
+  display: inline-block;
+  flex-direction: row;
+}
+
+.header-buttons button:hover {
+  background: #66bb6a;
+}
+
+/* Top Buttons */
+.top-buttons {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: #4caf50;
+  color: #fff;
+  font-weight: 600;
+}
+
+tr:hover {
+  background: #e8f5e9;
+}
+
+/* Link Styles */
+a {
+  color: #2e7d32;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Message Area */
+#messageArea,
+#resultArea,
+#section1 {
+  margin-top: 15px;
+  text-align: center;
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+#section1 {
+  margin-top: 30px;
+  font-size: 16px;
+  color: #555;
+}
+
+#resultArea {
+  margin-top: 30px;
+  font-size: 16px;
+  color: #555;
+}

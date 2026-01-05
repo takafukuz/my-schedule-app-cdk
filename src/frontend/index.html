@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>My Schedule App - Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <h1>My Schedule App</h1>
+
+  <div class="login-container">
+    <p style="text-align:center; margin-bottom: 20px;">ログインしてください</p>
+
+    <form id="loginForm">
+      <label>
+        ユーザー名
+        <input type="text" id="username" name="username" inputmode="latin" required>
+      </label>
+
+      <label>
+        パスワード
+        <input type="password" id="password" name="password" inputmode="latin" required>
+      </label>
+
+      <button type="submit">ログイン</button>
+    </form>
+
+    <div id="messageArea"></div>
+  </div>
+
+  <script src="js/config/cognito-config.js"></script>
+  <script src="js/auth/login.js"></script>
+  
+</body>
+</html>

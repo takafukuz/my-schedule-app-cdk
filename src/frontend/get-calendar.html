@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>My Schedule App - カレンダー</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="header-buttons">
+    <button id="changePasswordBtn">パスワード変更</button>
+    <button id="logoutBtn">ログアウト</button>
+  </div>
+  
+  <h1>My Schedule App</h1>
+  <div id="nameplate" style="text-align: center;"></div>
+  
+  <div class="top-buttons">
+    <button onclick="window.location.href='add-event.html';">予定の追加</button>
+  </div>
+
+  <form id="myForm">
+    <label for="start_date">開始日</label>
+    <input type="date" name="start_date" id="start_date" required>
+    <label for="end_date">終了日</label>
+    <input type="date" name="end_date" id="end_date" required>
+    <button type="submit">送信</button>
+  </form>
+
+  <div id="section1">データを取得中...</div>
+
+  <!-- ログインしていなければ、index.htmlにリダイレクト -->
+  <script src="js/auth/is-logged-in.js"></script>
+  <script src="js/config/cognito-config.js"></script>
+  <script type="module" src="js/config/api-gateway-config.js"></script>
+  <script src="js/auth/refresh-cognito-token.js"></script>
+  <script type="module" src="js/calendar/get-calendar.js"></script>
+  <script src="js/auth/logout.js"></script>
+</body>
+</html>
