@@ -65,10 +65,10 @@ def lambda_handler(event,context):
     try:
         # SSMパラメータストアからSecretsManager情報、RDS情報を取得
         logger.debug("Retrieving SSM parameters ...")
-        secret_id = get_rdsinfo("/easydays/secret_id")
-        region_name = get_rdsinfo("/easydays/region_name")
-        rds_host  = get_rdsinfo("/easydays/rds_host")
-        rds_database = get_rdsinfo("/easydays/rds_database")
+        secret_id = get_rdsinfo("/my_schedule_app/secret_id")
+        region_name = get_rdsinfo("/my_schedule_app/region_name")
+        rds_host  = get_rdsinfo("/my_schedule_app/rds_host")
+        rds_database = get_rdsinfo("/my_schedule_app/rds_database")
 
         # ユーザー情報を取得 user_idが空の場合はエラーを返す
         logger.debug("Retrieving user information ...")

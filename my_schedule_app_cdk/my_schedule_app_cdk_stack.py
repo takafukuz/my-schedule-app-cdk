@@ -23,11 +23,11 @@ class MyScheduleAppCdkStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # 公開用バケット（バケット名は固定）
+        # 公開用バケット（バケット名は固定しない）
         website_bucket = s3.Bucket(
             self,
             "WebsiteBucket",
-            bucket_name = "my-schedule-app-site-bucket",
+            # bucket_name = "my-schedule-app-prod-site-bucket",
             website_index_document = "index.html",
             public_read_access = True,
             block_public_access = s3.BlockPublicAccess(
@@ -37,6 +37,7 @@ class MyScheduleAppCdkStack(Stack):
                 restrict_public_buckets = False,
             ),
             removal_policy = RemovalPolicy.DESTROY,
+            auto_delete_objects = True,
         )
 
         # URLを出力
@@ -55,6 +56,7 @@ class MyScheduleAppCdkStack(Stack):
             encryption = s3.BucketEncryption.S3_MANAGED,
             versioned = True,
             removal_policy = RemovalPolicy.DESTROY,
+            auto_delete_objects = True,
         )
         
         # CSVファイルアップロード
@@ -197,15 +199,22 @@ class MyScheduleAppCdkStack(Stack):
         my_instance = ec2.Instance(
             self,
             "MyInstance",
-            instance_type = ec2.InstanceType("t3.micro"),
+            instance_type = ec2.InstanceType("t3.nano"),
             machine_image = my_ami,
             vpc = my_vpc,
             vpc_subnets = ec2.SubnetSelection(
                 subnets = [ my_vpc.public_subnets[0]]
             ),
             security_group = my_sg_for_ec2,
-            # key_name = "mykeypair_tokyo",
             key_pair = my_keypair,
+        )
+
+        # 踏み台サーバのIPアドレスの出力
+        CfnOutput(
+            self,
+            "MyInstanceIpAddrOutput",
+            value = my_instance.instance_public_ip,
+            description = "Public Ip Addr for Bastion Host",
         )
 
         # DBの作成

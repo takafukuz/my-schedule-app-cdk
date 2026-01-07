@@ -1,0 +1,8 @@
+{
+    "python.analysis.extraPaths": [
+        "./src/backend/layer/python",
+        "./src/backend/layer2/python",
+    ],
+    "python.envFile": "${workspaceFolder}/.env",
+    "editor.parameterHints.enabled": false
+}

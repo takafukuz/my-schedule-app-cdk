@@ -278,11 +278,11 @@ def lambda_handler(event,context):
     try:
         # SSMパラメータストアからSecretsManager情報、RDS情報を取得
         logger.debug("Retrieving SSM parameters ...")
-        secret_id = get_rdsinfo("/easydays/secret_id")
-        region_name = get_rdsinfo("/easydays/region_name")
-        rds_host  = get_rdsinfo("/easydays/rds_host")
-        rds_database = get_rdsinfo("/easydays/rds_database")
-        bucket_name = get_rdsinfo("/easydays/data_bucket")
+        secret_id = get_rdsinfo("/my_schedule_app/secret_id")
+        region_name = get_rdsinfo("/my_schedule_app/region_name")
+        rds_host  = get_rdsinfo("/my_schedule_app/rds_host")
+        rds_database = get_rdsinfo("/my_schedule_app/rds_database")
+        bucket_name = get_rdsinfo("/my_schedule_app/data_bucket")
 
         start_date = date.today()
         end_date = start_date + timedelta(days=365)
