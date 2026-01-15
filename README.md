@@ -1,58 +1,267 @@
+# MY-SCHEDULER-APP-CDK
 
-# Welcome to your CDK Python project!
+HTML / CSS / JavaScript を用いたフロントエンドと、Python 製のバックエンド API で構成した、シンプルなスケジュール管理 Web アプリケーションです。
 
-This is a blank project for CDK development with Python.
+フロントエンドは S3、バックエンドは Lambda と API Gateway、データベースは RDS（MySQL）を利用したサーバーレスアーキテクチャで構築しています。また、CloudFront を用いて独自ドメインおよび TLS 証明書を適用しています。
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+CloudFront を除く部分は、AWS CDK（Python）を使用して自動的にデプロイ可能です（my_schedule_app_cdk/my_schedule_app_cdk_stack.py）。
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+## 概要
 
-To manually create a virtualenv on MacOS and Linux:
+このプロジェクトは、以下のAWSサービスを利用した Web アプリケーションシステムです。
+
+- **API Gateway** - RESTful APIエンドポイント
+- **Lambda** - バックエンド処理（イベント管理、認証）
+- **RDS (MySQL)** - スケジュールデータベース
+- **S3** - フロントエンド（HTML）のホスティング、およびバッチ処理用データ（CSV）の格納
+- **Cognito** - ユーザー認証
+- **VPC** - ネットワーク（Lambda / RDS をプライベートサブネットに配置し、Lambda は VPC エンドポイント経由で各 AWS サービスに接続）
+- **KMS** - 暗号化キー管理
+- **Secrets Manager** - RDS認証情報の管理
+- **CloudFront** - 独自ドメインおよびTLS証明書適用
+
+## Web サイトの利用方法
+
+- URL  
+  https://my-schedule-app.takafukuz.dev/
+
+- デモ用ログイン情報  
+  - ユーザー名：demouser01  
+  - パスワード：Demouser#2026
+
+- サイトの利用方法  
+  - 「My-Schedule-app サイト利用マニュアル」を参照
+  - ご自由にご操作いただけますが、個人情報や機密情報は登録しないようご注意ください。
+
+## インフラ構成
+
+- 「my-schedule-app_インフラ構成図.png」を参照
+
+## アーキテクチャ概要
+
+- 「my-schedule-app_アーキテクチャ概要図.png」を参照
+
+## プロジェクト構成
 
 ```
-$ python -m venv .venv
+my-schedule-app-cdk/
+├── app.py                          # CDKアプリケーションエントリーポイント
+├── cdk.json                        # CDK設定ファイル
+├── requirements.txt                # Python依存パッケージ
+├── data/
+│   └── holiday-data.csv            # 祝日データ（S3にアップロード）
+├── src/
+│   ├── backend/
+│   │   ├── functions/              # Lambda関数
+│   │   │   ├── add_event/          # イベント追加
+│   │   │   ├── delete_event/       # イベント削除
+│   │   │   ├── get_calendar/       # カレンダー取得
+│   │   │   ├── get_detail/         # イベント詳細取得
+│   │   │   ├── get_event/          # イベント取得
+│   │   │   ├── init_db/            # データベース初期化
+│   │   │   └── update_event/       # イベント更新
+│   │   ├── layer/                  # Lambda Layer（共有モジュール）
+│   │   │   ├── logging_utils.py
+│   │   │   ├── secret_utils.py
+│   │   │   ├── ssm_utils.py
+│   │   │   └── user_utils.py
+│   │   └── layer2/                 # Lambda Layer（pymysql）
+│   │       └── pymysql/
+│   └── frontend/                   # Webフロントエンド
+│       ├── index.html
+│       ├── add-event.html
+│       ├── edit-event.html
+│       ├── get-calendar.html
+│       ├── get-detail.html
+│       ├── change-password.html
+│       ├── change-initial-password.html
+│       ├── css/
+│       │   └── style.css
+│       └── js/
+│           ├── auth/               # 認証関連
+│           │   ├── login.js
+│           │   ├── logout.js
+│           │   ├── is-logged-in.js
+│           │   ├── change-password.js
+│           │   ├── change-initial-password.js
+│           │   └── refresh-cognito-token.js
+│           ├── calendar/           # カレンダー操作
+│           │   ├── add-event.js
+│           │   ├── edit-event.js
+│           │   ├── get-calendar.js
+│           │   └── get-detail.js
+│           └── config/             # 設定
+│               ├── api-gateway-config.js
+│               └── cognito-config.js
+├── my_schedule_app_cdk/
+│   ├── __init__.py
+│   └── my_schedule_app_cdk_stack.py # CDKスタック定義
+└── tests/
+    └── unit/
+        └── test_my_schedule_app_cdk_stack.py
 ```
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+## 前提条件
 
-```
-$ source .venv/bin/activate
-```
+- Python 3.9以上
+- AWS CDK CLI
+- AWS アカウント
+- AWS認証情報の設定
 
-If you are a Windows platform, you would activate the virtualenv like this:
+## セットアップ手順
 
-```
-% .venv\Scripts\activate.bat
-```
+### 1. 仮想環境の作成
 
-Once the virtualenv is activated, you can install the required dependencies.
+```bash
+# Windows
+python -m venv .venv
+.venv\Scripts\activate.bat
 
-```
-$ pip install -r requirements.txt
-```
-
-At this point you can now synthesize the CloudFormation template for this code.
-
-```
-$ cdk synth
+# macOS/Linux
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+### 2. 依存パッケージのインストール
 
-## Useful commands
+```bash
+pip install -r requirements.txt
+```
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+### 3. 開発環境のセットアップ（オプション）
 
-Enjoy!
+```bash
+pip install -r requirements-dev.txt
+```
+
+## CDK コマンド
+
+### スタック一覧の表示
+
+```bash
+cdk ls
+```
+
+### CloudFormation テンプレートの生成
+
+```bash
+cdk synth
+```
+
+### スタックのデプロイ
+
+```bash
+cdk deploy
+```
+
+### スタックの差分確認
+
+```bash
+cdk diff
+```
+
+### ドキュメントの表示
+
+```bash
+cdk docs
+```
+
+## バックエンド機能
+
+### Lambda関数一覧
+
+| 関数名 | パス | 説明 |
+|--------|------|------|
+| add_event | `src/backend/functions/add_event/` | 新しいスケジュール/イベントを追加 |
+| delete_event | `src/backend/functions/delete_event/` | スケジュール/イベントを削除 |
+| get_calendar | `src/backend/functions/get_calendar/` | カレンダー情報を取得 |
+| get_detail | `src/backend/functions/get_detail/` | イベント詳細を取得 |
+| get_event | `src/backend/functions/get_event/` | イベント情報を取得 |
+| update_event | `src/backend/functions/update_event/` | イベント情報を更新 |
+| init_db | `src/backend/functions/init_db/` | データベースを初期化 |
+
+### Lambda Layer
+
+**Layer** - 共有Pythonモジュール：
+- `logging_utils.py` - ログ出力ユーティリティ
+- `secret_utils.py` - Secrets Manager連携
+- `ssm_utils.py` - Systems Manager パラメータストア連携
+- `user_utils.py` - ユーザー情報取得（API Gateway 経由の Cognito 認証情報からユーザーID・ユーザー名を抽出）
+
+**Layer2** - pymysqlライブラリ（データベース接続）
+
+## フロントエンド
+
+### 認証画面
+
+- **index.html** - ログイン画面
+- **change-password.html** - パスワード変更
+- **change-initial-password.html** - 初期パスワード変更
+
+### メイン機能
+
+- **get-calendar.html** - カレンダービュー
+- **add-event.html** - イベント追加
+- **edit-event.html** - イベント編集
+- **get-detail.html** - イベント詳細表示
+
+### スタイリング
+
+- **css/style.css** - アプリケーション全体のスタイル
+
+## セキュリティ考慮事項
+
+- **VPC** - プライベートサブネット内でRDSを実行
+- **KMS暗号化** - S3とRDSのデータ暗号化
+- **Secrets Manager** - データベース認証情報の安全な管理
+- **Cognito** - エンタープライズグレードの認証
+- **S3ブロック設定** - パブリックアクセスの適切な制御
+
+## デプロイ後の初期化
+
+デプロイ完了後、`init_db` Lambda関数が実行され、データベースに必要なテーブルが作成されます。
+
+## トラブルシューティング
+
+### CDK Bootstrapが必要な場合
+
+```bash
+cdk bootstrap aws://ACCOUNT-ID/REGION
+```
+
+### 仮想環境の問題
+
+```bash
+# 仮想環境を再作成
+rm -rf .venv
+python -m venv .venv
+.venv\Scripts\activate.bat  # Windows の場合
+pip install -r requirements.txt
+```
+
+### デプロイの削除
+
+```bash
+cdk destroy
+```
+
+## 今後の課題
+
+プログラミング技術の向上と AWS サービスへの理解を深めるため、以下の改善に取り組む予定です。
+
+- 各コードのリファクタリング
+  - フロントエンド
+    - async/await と .then が混在しているため、構文を統一
+    - CognitoのSDK利用（現状は、APIを直接fetchしているため）
+    - ユーザーインターフェースの改善（より直感的な操作を可能にする）
+    - エラー処理の拡充
+  - バックエンド
+    - オブジェクト指向設計への移行  
+      現状は関数中心の構成のため、クラスやメソッドを用いた設計へリファクタリング
+- インフラ関連
+  - データベースを DynamoDB へ移行
+  - CDK を TypeScript へ移植
+
+---
+
+**最終更新**: 2026年1月15日
