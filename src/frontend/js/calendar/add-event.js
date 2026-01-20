@@ -55,7 +55,9 @@ document.getElementById("myForm").addEventListener("submit",function(e){
     .then(body => body.json())
     .then(bodyJson => {
     if (bodyJson.status === "success"){
-        window.location.href = "get-calendar.html";
+        const date = document.getElementById("date").value;
+        window.location.href = `get-detail.html?date=${encodeURIComponent(date)}`;
+        // window.location.href = "get-calendar.html";
     } else {
         const resultMessage = document.getElementById("resultArea");
         resultMessage.innerHTML = `<p>エラーが発生しました：${bodyJson.message}</p>`;

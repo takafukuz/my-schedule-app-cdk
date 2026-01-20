@@ -93,7 +93,8 @@ document.getElementById("myForm").addEventListener("submit",function(e){
     .then(bodyJson => {
     if (bodyJson.status === "success"){
         // window.alert("更新に成功しました")
-        window.location.href = "get-calendar.html";
+        const date = document.getElementById("date").value;
+        window.location.href = `get-detail.html?date=${encodeURIComponent(date)}`;
     } else {
         window.alert("更新に失敗しました");
         // window.location.href = "get-calendar.html";
