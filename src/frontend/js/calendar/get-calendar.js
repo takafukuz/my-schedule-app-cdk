@@ -42,13 +42,25 @@ function create_rows(data){
     let resultHtml = "<table><tr>";
     resultHtml += "<th>日付</th><th>曜日</th><th>祝日</th><th>予定</th></tr>";
     for (const row of data){
+        let style = "";
+        // 土日の場合、色を変える
+        if (row.weekday === "土"){ 
+            style = 'style="color: blue;"'; 
+        } 
+        if (row.weekday === "日"){
+                style = 'style="color: red;"'; 
+        }
+        // 祝日の場合、色を変える
+        if (row.holiday_name){
+            style = 'style="color: red;"';
+        }
         // 日付の行をクリックしたとき、その日のページへ移動
         resultHtml += `<tr onclick="location.href='${apiBaseUrl}${row.date}'" style="cursor:pointer;">`;
-        for ( const key in row){
-            let word = row[key];
-            word = (word === null) ? "" : word;
-            resultHtml += `<td>${word}</td>`; 
-        }
+        resultHtml += `<td ${style}>${row.date}</td>`;
+        resultHtml += `<td ${style}>${row.weekday}</td>`;
+        resultHtml += `<td ${style}>${row.holiday_name === null ? "" : row.holiday_name}</td>`;
+        // 予定欄は色をつけない
+        resultHtml += `<td>${row.events === null ? "" : row.events}</td>`;
         resultHtml += '</tr>';
     }
     resultHtml += "</table>";
