@@ -9,16 +9,19 @@ function create_table(data){
     const baseApiUrl = "edit-event.html?event_id=";
     let resultHtml = '<form id="myForm">';
     resultHtml += '<table><tr>';
-    resultHtml += "<th>選択</th><th>予定番号</th><th>日付</th><th>予定名</th><th>予定詳細</th><tr>";
+    resultHtml += "<th>選択</th><th>予定番号</th><th>日付</th><th>予定名</th><th>予定詳細</th></tr>";
 
     for (const row of data){
+        // 行をクリックしたら、その予定の編集画面に遷移
+        resultHtml += `<tr onclick="location.href='${baseApiUrl}${row.event_id}'" style="cursor:pointer;">`;
         for (const key in row){
             let word = row[key] || "";
             if (key === "event_id"){
-            resultHtml += `<td><input type="checkbox" name="selectedEvent" value="${word}"></td>`;
-            resultHtml += `<td><a href="${baseApiUrl}${word}">${word}</a></td>`;
+                // 削除用チェックボックスは、行のクリックイベントを阻止
+                resultHtml += `<td><input type="checkbox" name="selectedEvent" value="${word}" onclick="event.stopPropagation();"></td>`;
+                resultHtml += `<td>${word}</td>`;
             } else {
-            resultHtml += `<td>${word}</td>`;
+                resultHtml += `<td>${word}</td>`;
             }
         }
         resultHtml += '</tr>';
