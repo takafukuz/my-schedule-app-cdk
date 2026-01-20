@@ -37,15 +37,21 @@ document.addEventListener("DOMContentLoaded", async function(){
     // .then(resJson => JSON.parse(resJson.body))
     .then(bodyJson => {
         if (bodyJson.status === "success") {
-        document.getElementById("nameplate").innerHTML = `<p>${bodyJson.message.username}さん、ログイン中</p>`;
-        document.getElementById("event_id").value = bodyJson.message.data.event_id;
-        document.getElementById("date").value = bodyJson.message.data.date;
-        document.getElementById("event_name").value = bodyJson.message.data.event_name;
-        document.getElementById("event_detail").value = bodyJson.message.data.event_detail;
+            // データがある場合は、データを取得する
+            document.getElementById("nameplate").innerHTML = `<p>${bodyJson.message.username}さん、ログイン中</p>`;
+            document.getElementById("event_id").value = bodyJson.message.data.event_id;
+            document.getElementById("date").value = bodyJson.message.data.date;
+            document.getElementById("event_name").value = bodyJson.message.data.event_name;
+            document.getElementById("event_detail").value = bodyJson.message.data.event_detail;
+            // 戻るボタンのリンク先を日付のページに設定
+            document.getElementById("backButton").onclick = function() {
+                const date = bodyJson.message.data.date;
+                window.location.href = `get-detail.html?date=${encodeURIComponent(date)}`;
+        };
         } else {
-        window.alert("データの取得に失敗しました");
-        console.log(bodyJson);
-        window.location.href = "get-calendar.html";
+            window.alert("データの取得に失敗しました");
+            console.log(bodyJson);
+            window.location.href = "get-calendar.html";
         }
     });
     } catch (error) {
@@ -67,10 +73,10 @@ document.getElementById("myForm").addEventListener("submit",function(e){
     }
 
     const postData = {
-    event_id: document.getElementById("event_id").value,
-    date: document.getElementById("date").value,
-    event_name: document.getElementById("event_name").value,
-    event_detail: document.getElementById("event_detail").value
+        event_id: document.getElementById("event_id").value,
+        date: document.getElementById("date").value,
+        event_name: document.getElementById("event_name").value,
+        event_detail: document.getElementById("event_detail").value
     };
 
     const apiGatewayBaseUrl = API_GATEWAY_URL;

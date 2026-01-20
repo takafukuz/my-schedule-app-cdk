@@ -117,9 +117,16 @@ document.addEventListener("DOMContentLoaded", async function(){
     .then(bodyJson => {
     if (bodyJson.status === "success"){
         // console.log("success")
-        // console.log(bodyJson);
+        console.log(bodyJson);
         // console.log(bodyJson.message);
         document.getElementById("nameplate").innerHTML = `<p>${bodyJson.message.username}さん、ログイン中</p>`;
+        // データが空の場合
+        if (!bodyJson.message.data || Object.keys(bodyJson.message.data).length === 0) {
+            document.getElementById("resultArea").innerHTML =
+                `<p style="color:red; text-align:center;">予定がありません</p>`;
+            return; // これ以上処理しない
+        }
+        // データがある場合は、テーブルを作成する
         create_table(bodyJson.message.data);
     } else {
         console.log(bodyJson);
