@@ -40,18 +40,16 @@ document.addEventListener("DOMContentLoaded", async function() {
 function create_rows(data){
     const apiBaseUrl = "get-detail.html?date=";
     let resultHtml = "<table><tr>";
-    resultHtml += "<th>日付</th><th>曜日</th><th>祝日</th><th>予定</th><tr>";
+    resultHtml += "<th>日付</th><th>曜日</th><th>祝日</th><th>予定</th></tr>";
     for (const row of data){
-    for ( const key in row){
-        let word = row[key];
-        word = (word === null) ? "" : word;
-        if (key === "date") {
-        resultHtml += `<td><a href="${apiBaseUrl}${word}">${word}</a></td>`;
-        } else {
-        resultHtml += `<td>${word}</td>`; 
+        // 日付の行をクリックしたとき、その日のページへ移動
+        resultHtml += `<tr onclick="location.href='${apiBaseUrl}${row.date}'" style="cursor:pointer;">`;
+        for ( const key in row){
+            let word = row[key];
+            word = (word === null) ? "" : word;
+            resultHtml += `<td>${word}</td>`; 
         }
-    }
-    resultHtml += '</tr>';
+        resultHtml += '</tr>';
     }
     resultHtml += "</table>";
     document.getElementById("section1").innerHTML = resultHtml;
