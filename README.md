@@ -29,6 +29,12 @@ CloudFront を除く部分は、AWS CDK（Python）を使用して自動的に�
   - ユーザー名：demouser01  
   - パスワード：Demouser#2026
 
+  - ユーザー名：demouser02  
+  - パスワード：Demouser#2026
+
+  - ユーザー名：demouser03  
+  - パスワード：Demouser#2026
+
 ※ご自由にご操作いただけますが、個人情報や機密情報は登録しないようご注意ください。
 
 ## インフラ構成
@@ -164,6 +170,12 @@ cdk diff
 cdk docs
 ```
 
+### デプロイの削除
+
+```bash
+cdk destroy
+```
+
 ## バックエンド機能
 
 ### Lambda関数一覧
@@ -213,35 +225,13 @@ cdk docs
 - **KMS暗号化** - S3とRDSのデータ暗号化
 - **Secrets Manager** - データベース認証情報の安全な管理
 - **Cognito** - エンタープライズグレードの認証
-- **S3ブロック設定** - パブリックアクセスの適切な制御
 
-## デプロイ後の初期化
+## データベースの初期化
 
-デプロイ完了後、`init_db` Lambda関数が実行され、データベースに必要なテーブルが作成されます。
+デプロイ完了時に `init_db` Lambda 関数が実行され、  
+データベースに必要なテーブルの作成および初期データ（日付情報・祝日情報）の投入を行います。
 
-## トラブルシューティング
-
-### CDK Bootstrapが必要な場合
-
-```bash
-cdk bootstrap aws://ACCOUNT-ID/REGION
-```
-
-### 仮想環境の問題
-
-```bash
-# 仮想環境を再作成
-rm -rf .venv
-python -m venv .venv
-.venv\Scripts\activate.bat  # Windows の場合
-pip install -r requirements.txt
-```
-
-### デプロイの削除
-
-```bash
-cdk destroy
-```
+本処理は再実行可能な設計となっており、既存データは保持されます。
 
 ## 今後の課題
 
@@ -262,4 +252,4 @@ cdk destroy
 
 ---
 
-**最終更新**: 2026年1月15日
+**最終更新**: 2026年1月21日
