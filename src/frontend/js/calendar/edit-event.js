@@ -1,5 +1,8 @@
 "use strict";
 import { API_GATEWAY_URL } from '../config/api-gateway-config.js';
+// HTMLエスケープ関数（XSS対策）
+import { escapeHtml } from './escape.js';
+
 let idToken = ""
 
 document.addEventListener("DOMContentLoaded", async function(){
@@ -38,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async function(){
     .then(bodyJson => {
         if (bodyJson.status === "success") {
             // データがある場合は、データを取得する
-            document.getElementById("nameplate").innerHTML = `<p>${bodyJson.message.username}さん、ログイン中</p>`;
+            document.getElementById("nameplate").innerHTML = `<p>${escapeHtml(bodyJson.message.username)}さん、ログイン中</p>`;
             document.getElementById("event_id").value = bodyJson.message.data.event_id;
             document.getElementById("date").value = bodyJson.message.data.date;
             document.getElementById("event_name").value = bodyJson.message.data.event_name;

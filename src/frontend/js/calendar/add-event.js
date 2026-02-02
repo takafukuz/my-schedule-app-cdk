@@ -1,5 +1,8 @@
 "use strict";
 import { API_GATEWAY_URL } from '../config/api-gateway-config.js';
+// HTMLエスケープ関数（XSS対策）
+import { escapeHtml } from './escape.js';
+
 let idToken = "";
 
 document.addEventListener("DOMContentLoaded", async function(){
@@ -60,7 +63,7 @@ document.getElementById("myForm").addEventListener("submit",function(e){
         // window.location.href = "get-calendar.html";
     } else {
         const resultMessage = document.getElementById("resultArea");
-        resultMessage.innerHTML = `<p>エラーが発生しました：${bodyJson.message}</p>`;
+        resultMessage.innerHTML = `<p>エラーが発生しました：${escapeHtml(bodyJson.message)}</p>`;
         console.log(bodyJson);
     }
     });

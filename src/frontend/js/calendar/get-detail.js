@@ -1,5 +1,7 @@
 'use strict';
 import { API_GATEWAY_URL } from '../config/api-gateway-config.js';
+import { escapeHtml } from './escape.js';
+
 let idToken = ""
 
 const params = new URLSearchParams(window.location.search);
@@ -13,15 +15,15 @@ function create_table(data){
 
     for (const row of data){
         // 行をクリックしたら、その予定の編集画面に遷移
-        resultHtml += `<tr onclick="location.href='${baseApiUrl}${row.event_id}'" style="cursor:pointer;">`;
+        resultHtml += `<tr onclick="location.href='${baseApiUrl}${escapeHtml(row.event_id)}'" style="cursor:pointer;">`;
         for (const key in row){
             let word = row[key] || "";
             if (key === "event_id"){
                 // 削除用チェックボックスは、行のクリックイベントを阻止
-                resultHtml += `<td><input type="checkbox" name="selectedEvent" value="${word}" onclick="event.stopPropagation();"></td>`;
-                resultHtml += `<td>${word}</td>`;
+                resultHtml += `<td><input type="checkbox" name="selectedEvent" value="${escapeHtml(word)}" onclick="event.stopPropagation();"></td>`;
+                resultHtml += `<td>${escapeHtml(word)}</td>`;
             } else {
-                resultHtml += `<td>${word}</td>`;
+                resultHtml += `<td>${escapeHtml(word)}</td>`;
             }
         }
         resultHtml += '</tr>';
@@ -119,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async function(){
         // console.log("success")
         console.log(bodyJson);
         // console.log(bodyJson.message);
-        document.getElementById("nameplate").innerHTML = `<p>${bodyJson.message.username}さん、ログイン中</p>`;
+        document.getElementById("nameplate").innerHTML = `<p>${escapeHtml(bodyJson.message.username)}さん、ログイン中</p>`;
         // データが空の場合
         if (!bodyJson.message.data || Object.keys(bodyJson.message.data).length === 0) {
             document.getElementById("resultArea").innerHTML =

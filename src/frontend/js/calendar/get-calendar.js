@@ -1,6 +1,8 @@
 
 'use strict';
 import { API_GATEWAY_URL } from '../config/api-gateway-config.js';
+import { escapeHtml } from './escape.js';
+
 let idToken = null;
 
 document.addEventListener("DOMContentLoaded", async function() {
@@ -37,6 +39,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     document.getElementById("myForm").dispatchEvent(new Event("submit"));
 });
 
+// カレンダーの行を作成する関数
 function create_rows(data){
     const apiBaseUrl = "get-detail.html?date=";
     let resultHtml = "<table><tr>";
@@ -55,12 +58,12 @@ function create_rows(data){
             style = 'style="color: red;"';
         }
         // 日付の行をクリックしたとき、その日のページへ移動
-        resultHtml += `<tr onclick="location.href='${apiBaseUrl}${row.date}'" style="cursor:pointer;">`;
-        resultHtml += `<td ${style}>${row.date}</td>`;
-        resultHtml += `<td ${style}>${row.weekday}</td>`;
-        resultHtml += `<td ${style}>${row.holiday_name === null ? "" : row.holiday_name}</td>`;
+        resultHtml += `<tr onclick="location.href='${apiBaseUrl}${escapeHtml(row.date)}'" style="cursor:pointer;">`;
+        resultHtml += `<td ${style}>${escapeHtml(row.date)}</td>`;
+        resultHtml += `<td ${style}>${escapeHtml(row.weekday)}</td>`;
+        resultHtml += `<td ${style}>${escapeHtml(row.holiday_name)}</td>`;
         // 予定欄は色をつけない
-        resultHtml += `<td>${row.events === null ? "" : row.events}</td>`;
+        resultHtml += `<td>${escapeHtml(row.events)}</td>`;
         resultHtml += '</tr>';
     }
     resultHtml += "</table>";
@@ -89,7 +92,7 @@ document.getElementById("myForm").addEventListener("submit", function(e){
     .then(body => body.json())
     .then(bodyJson => {
     if (bodyJson.status === "success"){
-        document.getElementById("nameplate").innerHTML = `<p>${bodyJson.message.username}さん、ログイン中</p>`
+        document.getElementById("nameplate").innerHTML = `<p>${escapeHtml(bodyJson.message.username)}さん、ログイン中</p>`
         // console.log(bodyJson.message.data);
         create_rows(bodyJson.message.data);
     } else {
