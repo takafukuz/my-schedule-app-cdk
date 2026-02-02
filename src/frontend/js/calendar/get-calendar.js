@@ -35,8 +35,10 @@ document.addEventListener("DOMContentLoaded", async function() {
     endDate.setDate(today.getDate() + 31);
     const endStr = `${endDate.getFullYear()}-${String(endDate.getMonth()+1).padStart(2,'0')}-${String(endDate.getDate()).padStart(2,'0')}`;
     document.getElementById("end_date").value = endStr;
-    // ページを開いたときに、強制的にPOSTする
-    document.getElementById("myForm").dispatchEvent(new Event("submit"));
+    // ページを開いたときに、強制的にPOSTする（廃止
+    // document.getElementById("myForm").dispatchEvent(new Event("submit"));
+    // カレンダー表示関数を直接呼び出す
+    await displayCalendar();
 });
 
 // カレンダーの行を作成する関数
@@ -69,10 +71,9 @@ function create_rows(data){
     resultHtml += "</table>";
     document.getElementById("section1").innerHTML = resultHtml;
 }
-// フォームのsubmitが押されたとき
-document.getElementById("myForm").addEventListener("submit", function(e){
-    e.preventDefault();
 
+// カレンダー表示
+async function displayCalendar(){
     const start_date = document.getElementById("start_date").value;
     const end_date = document.getElementById("end_date").value;
     const apiGatewayBaseUrl = API_GATEWAY_URL;
@@ -81,32 +82,41 @@ document.getElementById("myForm").addEventListener("submit", function(e){
         alert("終了日は、開始日より後の日付にしてください");
         return;
     }
+    try {
+        const response = await fetch(`${apiGatewayBaseUrl}/get-calendar?start_date=${encodeURIComponent(start_date)}&end_date=${encodeURIComponent(end_date)}`,{
+            method: "GET",
+            headers: {
+                "Content-Type":"application/json", 
+                "Authorization": idToken
+            },
+        });
+        
+        const bodyJson = await response.json();
 
-    fetch(`${apiGatewayBaseUrl}/get-calendar?start_date=${encodeURIComponent(start_date)}&end_date=${encodeURIComponent(end_date)}`,{
-    method: "GET",
-    headers: {
-        "Content-Type":"application/json", 
-        "Authorization": idToken
-    },
-    })
-    .then(body => body.json())
-    .then(bodyJson => {
-    if (bodyJson.status === "success"){
-        document.getElementById("nameplate").innerHTML = `<p>${escapeHtml(bodyJson.message.username)}さん、ログイン中</p>`
-        // console.log(bodyJson.message.data);
-        create_rows(bodyJson.message.data);
-    } else {
-        document.getElementById("section1").innerHTML = "<p>データが取得できませんでした</p>";
+        if (bodyJson.status === "success"){
+            document.getElementById("nameplate").innerHTML = `<p>${escapeHtml(bodyJson.message.username)}さん、ログイン中</p>`
+            // console.log(bodyJson.message.data);
+            create_rows(bodyJson.message.data);
+        } else {
+            document.getElementById("section1").innerHTML = "<p>データが取得できませんでした</p>";
+        }
+
+    } catch(error) {
+            console.log(error);
+            document.getElementById("section1").innerHTML = "<p>データが取得できませんでした</p>";
     }
-    })
-    .catch(error => {
-        console.log(error);
-        document.getElementById("section1").innerHTML = "<p>データが取得できませんでした</p>";
-    });
+
+}
+
+
+// フォームのsubmitが行なわれたとき
+document.getElementById("myForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    displayCalendar();
+
 });
 
-// パスワード変更ボタン
+// パスワード変更ボタンをクリックしたとき
 document.getElementById("changePasswordBtn").addEventListener("click",function(){
     window.location.href = "change-password.html";
-    return;
 })
