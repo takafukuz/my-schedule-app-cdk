@@ -328,7 +328,7 @@ def lambda_handler(event,context):
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps({
                 "status": "error",
-                "message": repr(e)
+                "message": "Internal server error"
             })
         }
 

@@ -126,7 +126,7 @@ def lambda_handler(event,context):
             },
             "body": json.dumps({
                 "status": "error",
-                "message": repr(e)
+                "message": "Internal server error"
             },ensure_ascii = False)
         }
 
