@@ -2,10 +2,87 @@
 import { API_GATEWAY_URL } from '../config/api-gateway-config.js';
 import { escapeHtml } from './escape.js';
 
-let idToken = ""
+let idToken = "";
 
+// GETパラメータの取得
 const params = new URLSearchParams(window.location.search);
 const date = params.get("date");
+
+document.addEventListener("DOMContentLoaded", async () =>{
+
+    // ログインしていなければ終了
+    idToken = localStorage.getItem("idToken");
+    console.log(`idToken: ${idToken}`);
+
+    if (!idToken){
+        window.alert("ログインしていません");
+        window.location.href = "index.html";
+        return;
+    }
+
+    // idTokenの更新処理
+    const refreshRes = await refreshCognitoToken();
+
+    if (refreshRes.status === "error"){
+        window.alert("トークンの更新に失敗: " + refreshRes.message);
+        window.location.href = "index.html";
+        return;
+    }
+
+    if (!refreshRes.AuthenticationResult){
+        window.alert("トークンの更新に失敗：AuthenticationResultがありません");
+        window.location.href = "index.html";
+        return;
+    }
+
+    // 以下、トークン更新成功時に実行
+    console.log("Refreshed Token successfully");
+    localStorage.setItem("idToken", refreshRes.AuthenticationResult.IdToken);
+    localStorage.setItem("accessToken", refreshRes.AuthenticationResult.AccessToken);
+    idToken = refreshRes.AuthenticationResult.IdToken;
+
+    const apiGatewayBaseUrl = API_GATEWAY_URL;
+    const apiUrl = `${apiGatewayBaseUrl}/get-detail?date=${encodeURIComponent(date)}`;
+
+    document.getElementById("subTitle").innerHTML = `${escapeHtml(date)}の予定`;
+    // 当該日の予定をAPIから取得して、テーブルで表示
+    try {
+        const response = await fetch(apiUrl,{
+            method: "GET",
+            headers: {
+                // "Content-Type":"application/json", //GETのときにContent-Typeは不要
+                "Authorization": idToken
+            }
+        });
+
+        if (!response.ok){
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const bodyJson = await response.json();
+        if (bodyJson.status === "success"){
+            // console.log("success")
+            console.log(bodyJson);
+            // console.log(bodyJson.message);
+            document.getElementById("nameplate").innerHTML = `<p>${escapeHtml(bodyJson.message.username)}さん、ログイン中</p>`;
+            // データが空の場合
+            if (!bodyJson.message.data || Object.keys(bodyJson.message.data).length === 0) {
+                document.getElementById("resultArea").innerHTML =
+                    `<p style="color:red; text-align:center;">予定がありません</p>`;
+                return; // これ以上処理しない
+            }
+            // データがある場合は、テーブルを作成する
+            create_table(bodyJson.message.data);
+        } else {
+            console.log(bodyJson);
+            document.getElementById("resultArea").innerText = "データが取得できませんでした";
+        }
+    } catch(error) {
+        console.log(error);
+        document.getElementById("resultArea").innerText = "データが取得できませんでした";
+    }
+
+});
 
 function create_table(data){
     const baseApiUrl = "edit-event.html?event_id=";
@@ -31,8 +108,8 @@ function create_table(data){
     resultHtml += "</table></form>";
     document.getElementById("resultArea").innerHTML = resultHtml;
 
-    // 「予定の削除」ボタンにイベントを紐付け
-    document.getElementById("deleteEventBtn").addEventListener("click", async function(){
+    // 「予定の削除」ボタンをクリックしたときの処理
+    document.getElementById("deleteEventBtn").addEventListener("click", async () =>{
 
         const nodeList = document.querySelectorAll('input[name="selectedEvent"]:checked');
         const selectedEvents = Array.from(nodeList).map(el => el.value);
@@ -45,6 +122,15 @@ function create_table(data){
         } else {
             if (window.confirm(`予定番号${selectedEvents}を削除してよろしいですか？`)){
                 try {
+
+                    // ログイン判定（実用上、idTokenの更新処理はしない）
+                    idToken = localStorage.getItem("idToken");
+                    if (!idToken){
+                        window.alert("ログインしていません");
+                        window.location.href = "index.html";
+                        return;
+                    }
+
                     const response = await fetch(`${apiGatewayBaseUrl}/delete-event`,{
                         method: "POST",
                         headers: {
@@ -53,17 +139,22 @@ function create_table(data){
                         },
                         body: JSON.stringify(postData)
                     });
+
+                    if (!response.ok){
+                        throw new Error(`HTTP error: ${response.status}`);
+                    }
+
                     const bodyJson = await response.json();
                     if (bodyJson.status === "success"){
                         // window.alert("選択された予定を削除しました");
                         location.reload(true);
                     } else {
                         console.log(bodyJson);
-                        window.alert("エラーが発生しました");
+                        window.alert("予定の削除時にエラー発生");
                     }
                 } catch (err) {
                     console.error(err);
-                    window.alert("エラーが発生しました");
+                    window.alert("予定の削除時にエラー発生");
                 }
             } else {
                 document.querySelectorAll('input[name="selectedEvent"]:checked').forEach(el => el.checked=false);
@@ -72,78 +163,12 @@ function create_table(data){
     });
 }
 
-document.addEventListener("DOMContentLoaded", async function(){
-
-    // ログインしていなければ終了
-    idToken = localStorage.getItem("idToken");
-    console.log(`idToken: ${idToken}`)
-
-    if (!idToken){
-    window.alert("ログインしていません");
-    window.location.href = "index.html";
-    return;
-    }
-
-    // idTokenの更新処理
-    const refreshRes = await refreshCognitoToken();
-    console.log(refreshRes);
-    if (refreshRes.AuthenticationResult){
-        console.log("Refreshed Token successfully")
-        localStorage.setItem("idToken", refreshRes.AuthenticationResult.IdToken);
-        localStorage.setItem("accessToken", refreshRes.AuthenticationResult.AccessToken);
-
-        idToken = refreshRes.AuthenticationResult.IdToken;
-
-    } else {
-        window.alert("トークンの更新に失敗しました");
-        window.location.href = "index.html";
-        return;
-    }
-
-    // ログイン済みの場合のみ、下記を実施
-    const apiGatewayBaseUrl = API_GATEWAY_URL;
-    const apiUrl = `${apiGatewayBaseUrl}/get-detail?date=${encodeURIComponent(date)}`;
-
-    document.getElementById("subTitle").innerHTML = `${escapeHtml(date)}の予定`
-
-    try {
-        const response = await fetch(apiUrl,{
-            method: "GET",
-            headers: {
-                // "Content-Type":"application/json", GETのときにContent-Typeは不要
-                "Authorization": idToken
-            }
-        });
-        const bodyJson = await response.json();
-        if (bodyJson.status === "success"){
-            // console.log("success")
-            console.log(bodyJson);
-            // console.log(bodyJson.message);
-            document.getElementById("nameplate").innerHTML = `<p>${escapeHtml(bodyJson.message.username)}さん、ログイン中</p>`;
-            // データが空の場合
-            if (!bodyJson.message.data || Object.keys(bodyJson.message.data).length === 0) {
-                document.getElementById("resultArea").innerHTML =
-                    `<p style="color:red; text-align:center;">予定がありません</p>`;
-                return; // これ以上処理しない
-            }
-            // データがある場合は、テーブルを作成する
-            create_table(bodyJson.message.data);
-        } else {
-            console.log(bodyJson);
-            document.getElementById("resultArea").innerText = "データが取得できませんでした";
-        }
-    } catch(error) {
-    console.log(error);
-    document.getElementById("section1").innerHTML = "<p>データが取得できませんでした。</p>";
-    }
-
-});
-
-document.getElementById("addEventBtn").addEventListener("click",function(){
+// 予定追加ボタン
+document.getElementById("addEventBtn").addEventListener("click", () =>{
     window.location.href = `add-event.html?date=${encodeURIComponent(date)}`;
 });
 
 // パスワード変更ボタン
-document.getElementById("changePasswordBtn").addEventListener("click",function(){
+document.getElementById("changePasswordBtn").addEventListener("click", () => {
     window.location.href = "change-password.html";
 });

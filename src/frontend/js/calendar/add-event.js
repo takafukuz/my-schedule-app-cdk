@@ -5,25 +5,40 @@ import { escapeHtml } from './escape.js';
 
 let idToken = "";
 
-document.addEventListener("DOMContentLoaded", async function(){
+document.addEventListener("DOMContentLoaded", async () =>{
 
-    // idTokenの更新処理
-    const refreshRes = await refreshCognitoToken();
-    console.log(refreshRes);
-    if (refreshRes.AuthenticationResult){
-        console.log("Refreshed Token successfully")
-        localStorage.setItem("idToken", refreshRes.AuthenticationResult.idToken);
-        localStorage.setItem("accessToken", refreshRes.AuthenticationResult.AccessToken);
+    // ログインしていなければ終了
+    idToken = localStorage.getItem("idToken");
+    console.log(`idToken: ${idToken}`);
 
-        idToken = refreshRes.AuthenticationResult.IdToken;
-
-    } else {
-        window.alert("トークンの更新に失敗しました");
+    if (!idToken){
+        window.alert("ログインしていません");
         window.location.href = "index.html";
         return;
     }
 
-    // ログインしている場合は、日付をセットする
+    // idTokenの更新処理
+    const refreshRes = await refreshCognitoToken();
+
+    if (refreshRes.status === "error"){
+        window.alert("トークンの更新に失敗: " + refreshRes.message);
+        window.location.href = "index.html";
+        return;
+    }
+
+    if (!refreshRes.AuthenticationResult){
+        window.alert("トークンの更新に失敗：AuthenticationResultがありません");
+        window.location.href = "index.html";
+        return;
+    }
+
+    // 以下、トークン更新成功時に実行
+    console.log("Refreshed Token successfully");
+    localStorage.setItem("idToken", refreshRes.AuthenticationResult.IdToken);
+    localStorage.setItem("accessToken", refreshRes.AuthenticationResult.AccessToken);
+    idToken = refreshRes.AuthenticationResult.IdToken;
+
+    // 日付をセットする
     const getParams = new window.URLSearchParams(window.location.search);
     const date = getParams.get("date");
     if (date){
@@ -37,34 +52,56 @@ document.addEventListener("DOMContentLoaded", async function(){
     }
 });
 
-document.getElementById("myForm").addEventListener("submit",function(e){
+// submitポタンクリック時の処理
+document.getElementById("myForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // ログインしていなければ終了（実用上、idTokenの更新処理はしない）
+    idToken = localStorage.getItem("idToken");
+    console.log(`idToken: ${idToken}`);
+
+    if (!idToken){
+        window.alert("ログインしていません");
+        window.location.href = "index.html";
+        return;
+    }
+
+    // 予定追加処理の実行
     const postData = {
-    date: document.getElementById("date").value,
-    event_name: document.getElementById("event_name").value,
-    event_detail: document.getElementById("event_detail").value
+        date: document.getElementById("date").value,
+        event_name: document.getElementById("event_name").value,
+        event_detail: document.getElementById("event_detail").value
     };
 
     const apiGatewayBaseUrl = API_GATEWAY_URL;
-    fetch(`${apiGatewayBaseUrl}/add-event`,{
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": idToken
-        },
-        body: JSON.stringify(postData)
-    })
-    .then(body => body.json())
-    .then(bodyJson => {
+
+    let response;
+    try {
+        response = await fetch(`${apiGatewayBaseUrl}/add-event`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": idToken
+            },
+            body: JSON.stringify(postData)
+        });
+
+        if (!response.ok){
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("予定の追加時にエラー発生", error);
+        window.alert("予定の追加時にエラー発生");
+        return;
+    }
+
+    const bodyJson = await response.json();
     if (bodyJson.status === "success"){
+        // 登録成功の場合、その日の予定一覧画面に遷移
         const date = document.getElementById("date").value;
         window.location.href = `get-detail.html?date=${encodeURIComponent(date)}`;
-        // window.location.href = "get-calendar.html";
     } else {
-        const resultMessage = document.getElementById("resultArea");
-        resultMessage.innerHTML = `<p>エラーが発生しました：${escapeHtml(bodyJson.message)}</p>`;
-        console.log(bodyJson);
+        console.error("予定の追加時にエラー発生",bodyJson);
+        window.alert("予定の追加時にエラー発生");
     }
-    });
 });
