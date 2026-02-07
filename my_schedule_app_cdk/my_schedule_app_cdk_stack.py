@@ -24,6 +24,7 @@ class MyScheduleAppCdkStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # 公開用バケット（バケット名は固定しない）
+        # 別途CloudFrontのOAC設定＋S3バケットポリシー追記（CloudFrontからの接続を許可）が必要
         website_bucket = s3.Bucket(
             self,
             "WebsiteBucket",
