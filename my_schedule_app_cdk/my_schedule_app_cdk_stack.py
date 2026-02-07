@@ -27,15 +27,10 @@ class MyScheduleAppCdkStack(Stack):
         website_bucket = s3.Bucket(
             self,
             "WebsiteBucket",
-            # bucket_name = "my-schedule-app-prod-site-bucket",
             website_index_document = "index.html",
-            public_read_access = True,
-            block_public_access = s3.BlockPublicAccess(
-                block_public_acls = False,
-                block_public_policy = False,
-                ignore_public_acls = False,
-                restrict_public_buckets = False,
-            ),
+            public_read_access = False,
+            block_public_access = s3.BlockPublicAccess.BLOCK_ALL,
+            encryption = s3.BucketEncryption.S3_MANAGED,
             removal_policy = RemovalPolicy.DESTROY,
             auto_delete_objects = True,
         )
