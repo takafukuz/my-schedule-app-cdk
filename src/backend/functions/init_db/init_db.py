@@ -278,8 +278,8 @@ def lambda_handler(event,context):
         "end_date": date.today() + timedelta(days=365),
         "bucket_name": bucket_name,
         "object_key": "holiday-data.csv",
-        "download_dir": "tests/sandbox", # ローカル動作確認用
-        # "download_dir": "/tmp", # 本番用
+        # "download_dir": "tests/sandbox", # ローカル動作確認用
+        "download_dir": "/tmp", # 本番用
     }
 
     # 処理実行
